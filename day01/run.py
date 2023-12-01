@@ -1,9 +1,17 @@
 #!/usr/bin/env python
+import pathlib
+
+
+def read_lines():
+    this_dir = pathlib.Path(__file__).absolute().parent
+    path = this_dir / 'input.txt'
+    with path.open() as fp:
+        lines = fp.readlines()
+    return lines
 
 
 def part1():
-    with open('input.txt') as fp:
-        lines = fp.readlines()
+    lines = read_lines()
     digits = []
     for li in lines:
         li = li.strip()
@@ -56,8 +64,7 @@ def part2():
     }
     first_char_keys = first_chars.keys()
 
-    with open('input.txt') as fp:
-        lines = fp.readlines()
+    lines = read_lines()
 
     digits = []
     for li in lines:
