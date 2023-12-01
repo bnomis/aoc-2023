@@ -68,22 +68,16 @@ def part2():
             c = li[index]
             if c.isdigit():
                 di.append(c)
-                index += 1
             else:
                 if c in first_char_keys:
                     num = find_num(li, index)
                     if num:
                         di.append(nums[num])
-                        index += len(num)
-                    else:
-                        index += 1
-                else:
-                    index += 1
+            index += 1
 
         num_str = di[0] + di[-1]
         digits.append(int(num_str))
 
-    print(digits)
     return sum(digits)
 
 
