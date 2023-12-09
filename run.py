@@ -4,6 +4,7 @@ import day02.run
 import day03.run
 import day04.run
 import day05.run
+import day06.run
 
 
 def main():
@@ -13,6 +14,7 @@ def main():
     day03.run.main()
     day04.run.main()
     day05.run.main()
+    day06.run.main()
 
 
 if __name__ == '__main__':
