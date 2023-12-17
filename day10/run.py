@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import pathlib
 
+import numpy
+
 
 def prev_is_north(prev: list[int], current: list[int]) -> bool:
     return prev[1] < current[1]
@@ -209,6 +211,73 @@ def count_steps(tiles: list[str], start: list[int]) -> int:
     return steps
 
 
+def paint_tile(tiles: list[str], coord: list[int]) -> list[str]:
+    s = tiles[coord[1]]
+    tiles[coord[1]] = s[:coord[0]] + '@' + s[coord[0] + 1:]
+    return tiles
+
+
+def paint_pipe(tiles: list[str]) -> list[str]:
+    start = find_s(tiles)
+    prev_tile = start
+    next_tile = find_connector(tiles, start)
+    tiles = paint_tile(tiles, start)
+    while not_home(start, next_tile):
+        next_next_tile = tile_to_next(tiles, prev_tile, next_tile)
+        prev_tile = next_tile
+        tiles = paint_tile(tiles, next_tile)
+        next_tile = next_next_tile
+    return tiles
+
+
+def tile_is_straight(tiles: list[str], coord: list[int]) -> bool:
+    tile = tile_at(tiles, coord)
+    return tile in ['-', '|']
+
+
+def tile_is_not_straight(tiles: list[str], coord: list[int]) -> bool:
+    return not tile_is_straight(tiles, coord)
+
+
+def tiles_to_path(tiles: list[str]) -> list[list[int]]:
+    path = []
+    start = find_s(tiles)
+    path.append(start)
+    prev_tile = start
+    next_tile = find_connector(tiles, start)
+    while not_home(start, next_tile):
+        path.append(next_tile)
+        next_next_tile = tile_to_next(tiles, prev_tile, next_tile)
+        prev_tile = next_tile
+        next_tile = next_next_tile
+    return path
+
+
+def make_det(a: list[int], b: list[int]) -> float:
+    a = numpy.array([a, b])
+    return numpy.linalg.det(a)
+
+
+# https://en.wikipedia.org/wiki/Shoelace_formula
+def path_to_area(path: list[list[int]]) -> float:
+    dets = []
+    length = len(path)
+    for index in range(length - 1):
+        dets.append(make_det(path[index], path[index + 1]))
+    dets.append(make_det(path[-1], path[0]))
+    return abs(sum(dets) / 2)
+
+
+# https://en.wikipedia.org/wiki/Pick%27s_theorem
+def interior_points(path: list[list[int]], area: float) -> int:
+    return int(area - (len(path) / 2) + 1)
+
+
+def print_tiles(tiles: list[str]):
+    for row in tiles:
+        print(row)
+
+
 def part1():
     tiles = load_tiles()
     start = find_s(tiles)
@@ -216,7 +285,10 @@ def part1():
 
 
 def part2():
-    return 0
+    tiles = load_tiles()
+    path = tiles_to_path(tiles)
+    area = path_to_area(path)
+    return interior_points(path, area)
 
 
 def main():
